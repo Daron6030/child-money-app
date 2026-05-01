@@ -25,7 +25,24 @@ if today.weekday() == 5 and data.get("last_reset_date") != str(today):
     data["last_reset_date"] = str(today)
     save_data(data)
 
-action = st.query_params.get("action")
+params = st.query_params
+action = params.get("action", "")
+dad = params.get("dad", "0")
+mom = params.get("mom", "0")
+
+if action == "dad":
+    dad = "0" if dad == "1" else "1"
+    st.query_params["dad"] = dad
+    st.query_params["mom"] = mom
+    st.query_params["action"] = ""
+    st.rerun()
+
+if action == "mom":
+    mom = "0" if mom == "1" else "1"
+    st.query_params["dad"] = dad
+    st.query_params["mom"] = mom
+    st.query_params["action"] = ""
+    st.rerun()
 
 if action == "minus50":
     data["balance"] = max(0, data["balance"] - 50)
@@ -40,10 +57,16 @@ if action == "minus100":
     st.rerun()
 
 if action == "plus100":
-    data["balance"] += 100
-    save_data(data)
+    if dad == "1" and mom == "1":
+        data["balance"] += 100
+        save_data(data)
     st.query_params.clear()
     st.rerun()
+
+dad_mark = "✅" if dad == "1" else "⬜"
+mom_mark = "✅" if mom == "1" else "⬜"
+
+plus_link = "?action=plus100&dad=1&mom=1" if dad == "1" and mom == "1" else "#"
 
 st.markdown("""
 <style>
@@ -52,7 +75,7 @@ header, footer, #MainMenu {
 }
 
 .stApp {
-    background: #ffffff !important;
+    background: white !important;
 }
 
 .block-container {
@@ -63,47 +86,46 @@ header, footer, #MainMenu {
 .phone {
     width: 100%;
     height: 720px;
-    background: white;
     border: 4px solid black;
-    box-sizing: border-box;
+    background: white;
     overflow: hidden;
-}
-
-.btn {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: black !important;
-    font-size: 58px;
-    font-weight: 500;
-    box-sizing: border-box;
 }
 
 .plus {
     height: 150px;
-    background: #14AEEA;
+    background: #18aee8;
+    display: flex;
+    align-items: center;
     padding-left: 22px;
+    font-size: 64px;
+    color: black !important;
+    text-decoration: none !important;
 }
 
-.plus-disabled {
-    height: 150px;
-    background: #14AEEA;
-    color: rgba(0,0,0,0.35) !important;
-    padding-left: 22px;
+.plus.locked {
+    opacity: 0.45;
 }
 
 .checks {
-    padding: 8px 16px 0 16px;
+    height: 70px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 15px;
     color: black;
-    font-size: 14px;
+}
+
+.checks a {
+    color: black !important;
+    text-decoration: none !important;
 }
 
 .balance {
-    height: 230px;
+    height: 210px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 62px;
+    font-size: 64px;
     color: black;
 }
 
@@ -111,53 +133,45 @@ header, footer, #MainMenu {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    padding: 0 10px 10px 10px;
+    padding: 0 10px;
 }
 
 .minus {
     height: 180px;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    font-size: 56px;
+    color: black !important;
+    text-decoration: none !important;
 }
 
 .green {
-    background: #24B84E;
+    background: #24b84e;
 }
 
 .red {
-    background: #F01825;
-}
-
-label {
-    color: black !important;
-    font-size: 16px !important;
+    background: #f01825;
 }
 </style>
 """, unsafe_allow_html=True)
 
-dad_ok = st.checkbox("Папа согласен")
-mom_ok = st.checkbox("Мама согласна")
-
-if dad_ok and mom_ok:
-    plus_html = '<a class="btn plus" href="?action=plus100">+ 100</a>'
-else:
-    plus_html = '<div class="btn plus-disabled">+ 100</div>'
-
-st.markdown(f"""
+html = f"""
 <div class="phone">
-    {plus_html}
+    <a class="plus {'locked' if not (dad == '1' and mom == '1') else ''}" href="{plus_link}">+ 100</a>
 
     <div class="checks">
-        ✅ Папа: {'да' if dad_ok else 'нет'} &nbsp;&nbsp;&nbsp;
-        ✅ Мама: {'да' if mom_ok else 'нет'}
+        <a href="?action=dad&dad={dad}&mom={mom}">{dad_mark} Папа согласен</a>
+        <a href="?action=mom&dad={dad}&mom={mom}">{mom_mark} Мама согласна</a>
     </div>
 
-    <div class="balance">
-        {data["balance"]} руб.
-    </div>
+    <div class="balance">{data["balance"]} руб.</div>
 
     <div class="bottom">
-        <a class="btn minus green" href="?action=minus50">- 50</a>
-        <a class="btn minus red" href="?action=minus100">- 100</a>
+        <a class="minus green" href="?action=minus50">- 50</a>
+        <a class="minus red" href="?action=minus100">- 100</a>
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""
+
+st.markdown(html, unsafe_allow_html=True)
