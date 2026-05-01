@@ -5,25 +5,17 @@ from datetime import datetime
 
 DATA_FILE = "balance_data.json"
 
-st.set_page_config(
-    page_title="",
-    page_icon="💰",
-    layout="centered"
-)
+st.set_page_config(page_title="Деньги", page_icon="💰", layout="centered")
 
 def load_data():
     if not os.path.exists(DATA_FILE):
         return {"balance": 1000, "last_reset_date": None}
-
     with open(DATA_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
 
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
-
-def rerun():
-    st.rerun()
 
 data = load_data()
 
@@ -33,6 +25,26 @@ if today.weekday() == 5 and data.get("last_reset_date") != str(today):
     data["last_reset_date"] = str(today)
     save_data(data)
 
+action = st.query_params.get("action")
+
+if action == "minus50":
+    data["balance"] = max(0, data["balance"] - 50)
+    save_data(data)
+    st.query_params.clear()
+    st.rerun()
+
+if action == "minus100":
+    data["balance"] = max(0, data["balance"] - 100)
+    save_data(data)
+    st.query_params.clear()
+    st.rerun()
+
+if action == "plus100":
+    data["balance"] += 100
+    save_data(data)
+    st.query_params.clear()
+    st.rerun()
+
 st.markdown("""
 <style>
 header, footer, #MainMenu {
@@ -40,7 +52,7 @@ header, footer, #MainMenu {
 }
 
 .stApp {
-    background: white !important;
+    background: #ffffff !important;
 }
 
 .block-container {
@@ -48,102 +60,104 @@ header, footer, #MainMenu {
     max-width: 390px !important;
 }
 
-div[data-testid="stVerticalBlock"] {
-    gap: 0 !important;
+.phone {
+    width: 100%;
+    height: 720px;
+    background: white;
+    border: 4px solid black;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-button {
-    border-radius: 0 !important;
-    border: none !important;
-    color: black !important;
-    font-weight: 500 !important;
-}
-
-.top button {
-    height: 130px !important;
-    background: #11AEE8 !important;
-    font-size: 56px !important;
-}
-
-.minus button {
-    height: 180px !important;
-    font-size: 46px !important;
-}
-
-.green button {
-    background: #24B84E !important;
-}
-
-.red button {
-    background: #F01825 !important;
-}
-
-.balance {
-    height: 180px;
+.btn {
     display: flex;
     align-items: center;
-    justify-content: center;
+    text-decoration: none;
+    color: black !important;
     font-size: 58px;
-    color: black;
+    font-weight: 500;
+    box-sizing: border-box;
+}
+
+.plus {
+    height: 150px;
+    background: #14AEEA;
+    padding-left: 22px;
+}
+
+.plus-disabled {
+    height: 150px;
+    background: #14AEEA;
+    color: rgba(0,0,0,0.35) !important;
+    padding-left: 22px;
 }
 
 .checks {
-    padding: 8px 12px 0 12px;
+    padding: 8px 16px 0 16px;
+    color: black;
+    font-size: 14px;
+}
+
+.balance {
+    height: 230px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 62px;
+    color: black;
+}
+
+.bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 10px 10px 10px;
+}
+
+.minus {
+    height: 180px;
+    justify-content: center;
+}
+
+.green {
+    background: #24B84E;
+}
+
+.red {
+    background: #F01825;
 }
 
 label {
     color: black !important;
-    font-size: 14px !important;
-}
-
-[data-testid="stCheckbox"] {
-    color: black !important;
+    font-size: 16px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="top">', unsafe_allow_html=True)
-add_clicked = st.button("+ 100", use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+dad_ok = st.checkbox("Папа согласен")
+mom_ok = st.checkbox("Мама согласна")
 
-st.markdown('<div class="checks">', unsafe_allow_html=True)
-col1, col2 = st.columns(2)
+if dad_ok and mom_ok:
+    plus_html = '<a class="btn plus" href="?action=plus100">+ 100</a>'
+else:
+    plus_html = '<div class="btn plus-disabled">+ 100</div>'
 
-with col1:
-    dad_ok = st.checkbox("Папа согласен")
+st.markdown(f"""
+<div class="phone">
+    {plus_html}
 
-with col2:
-    mom_ok = st.checkbox("Мама согласна")
+    <div class="checks">
+        ✅ Папа: {'да' if dad_ok else 'нет'} &nbsp;&nbsp;&nbsp;
+        ✅ Мама: {'да' if mom_ok else 'нет'}
+    </div>
 
-st.markdown('</div>', unsafe_allow_html=True)
+    <div class="balance">
+        {data["balance"]} руб.
+    </div>
 
-if add_clicked:
-    if dad_ok and mom_ok:
-        data["balance"] += 100
-        save_data(data)
-        rerun()
-    else:
-        st.warning("Нужно согласие папы и мамы")
-
-st.markdown(
-    f'<div class="balance">{data["balance"]} руб.</div>',
-    unsafe_allow_html=True
-)
-
-col_green, col_red = st.columns(2)
-
-with col_green:
-    st.markdown('<div class="minus green">', unsafe_allow_html=True)
-    if st.button("- 50", use_container_width=True):
-        data["balance"] = max(0, data["balance"] - 50)
-        save_data(data)
-        rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col_red:
-    st.markdown('<div class="minus red">', unsafe_allow_html=True)
-    if st.button("- 100", use_container_width=True):
-        data["balance"] = max(0, data["balance"] - 100)
-        save_data(data)
-        rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    <div class="bottom">
+        <a class="btn minus green" href="?action=minus50">- 50</a>
+        <a class="btn minus red" href="?action=minus100">- 100</a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
