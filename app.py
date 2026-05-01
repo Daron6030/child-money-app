@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import json
 import os
 from datetime import datetime
@@ -30,20 +31,6 @@ action = params.get("action", "")
 dad = params.get("dad", "0")
 mom = params.get("mom", "0")
 
-if action == "dad":
-    dad = "0" if dad == "1" else "1"
-    st.query_params["dad"] = dad
-    st.query_params["mom"] = mom
-    st.query_params["action"] = ""
-    st.rerun()
-
-if action == "mom":
-    mom = "0" if mom == "1" else "1"
-    st.query_params["dad"] = dad
-    st.query_params["mom"] = mom
-    st.query_params["action"] = ""
-    st.rerun()
-
 if action == "minus50":
     data["balance"] = max(0, data["balance"] - 50)
     save_data(data)
@@ -63,115 +50,143 @@ if action == "plus100":
     st.query_params.clear()
     st.rerun()
 
-dad_mark = "✅" if dad == "1" else "⬜"
-mom_mark = "✅" if mom == "1" else "⬜"
+if action == "dad":
+    dad = "0" if dad == "1" else "1"
+    st.query_params["dad"] = dad
+    st.query_params["mom"] = mom
+    st.query_params["action"] = ""
+    st.rerun()
 
-plus_link = "?action=plus100&dad=1&mom=1" if dad == "1" and mom == "1" else "#"
+if action == "mom":
+    mom = "0" if mom == "1" else "1"
+    st.query_params["dad"] = dad
+    st.query_params["mom"] = mom
+    st.query_params["action"] = ""
+    st.rerun()
+
+dad_box = "☑" if dad == "1" else "☐"
+mom_box = "☑" if mom == "1" else "☐"
+
+plus_opacity = "1" if dad == "1" and mom == "1" else "0.45"
+
+html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {{
+    margin: 0;
+    background: white;
+    font-family: Arial, sans-serif;
+}}
+
+.phone {{
+    width: 100%;
+    max-width: 360px;
+    height: 650px;
+    border: 4px solid black;
+    background: white;
+    box-sizing: border-box;
+    overflow: hidden;
+}}
+
+.plus {{
+    height: 140px;
+    background: #18aee8;
+    display: flex;
+    align-items: center;
+    padding-left: 22px;
+    font-size: 62px;
+    color: black;
+    text-decoration: none;
+    opacity: {plus_opacity};
+    box-sizing: border-box;
+}}
+
+.checks {{
+    height: 70px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 13px;
+    color: black;
+}}
+
+.checks a {{
+    color: black;
+    text-decoration: none;
+}}
+
+.balance {{
+    height: 210px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 58px;
+    color: black;
+}}
+
+.bottom {{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 10px;
+}}
+
+.minus {{
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    color: black;
+    text-decoration: none;
+}}
+
+.green {{
+    background: #24b84e;
+}}
+
+.red {{
+    background: #f01825;
+}}
+</style>
+</head>
+<body>
+    <div class="phone">
+        <a class="plus" target="_top" href="?action=plus100&dad={dad}&mom={mom}">+ 100</a>
+
+        <div class="checks">
+            <a target="_top" href="?action=dad&dad={dad}&mom={mom}">{dad_box} Папа согласен</a>
+            <a target="_top" href="?action=mom&dad={dad}&mom={mom}">{mom_box} Мама согласна</a>
+        </div>
+
+        <div class="balance">{data["balance"]} руб.</div>
+
+        <div class="bottom">
+            <a class="minus green" target="_top" href="?action=minus50">- 50</a>
+            <a class="minus red" target="_top" href="?action=minus100">- 100</a>
+        </div>
+    </div>
+</body>
+</html>
+"""
 
 st.markdown("""
 <style>
 header, footer, #MainMenu {
     display: none !important;
 }
-
-.stApp {
-    background: white !important;
-}
-
 .block-container {
-    padding: 0 !important;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     max-width: 390px !important;
 }
-
-.phone {
-    width: 100%;
-    height: 720px;
-    border: 4px solid black;
-    background: white;
-    overflow: hidden;
-}
-
-.plus {
-    height: 150px;
-    background: #18aee8;
-    display: flex;
-    align-items: center;
-    padding-left: 22px;
-    font-size: 64px;
-    color: black !important;
-    text-decoration: none !important;
-}
-
-.plus.locked {
-    opacity: 0.45;
-}
-
-.checks {
-    height: 70px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    font-size: 15px;
-    color: black;
-}
-
-.checks a {
-    color: black !important;
-    text-decoration: none !important;
-}
-
-.balance {
-    height: 210px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 64px;
-    color: black;
-}
-
-.bottom {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 0 10px;
-}
-
-.minus {
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 56px;
-    color: black !important;
-    text-decoration: none !important;
-}
-
-.green {
-    background: #24b84e;
-}
-
-.red {
-    background: #f01825;
+.stApp {
+    background: white !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-html = f"""
-<div class="phone">
-    <a class="plus {'locked' if not (dad == '1' and mom == '1') else ''}" href="{plus_link}">+ 100</a>
-
-    <div class="checks">
-        <a href="?action=dad&dad={dad}&mom={mom}">{dad_mark} Папа согласен</a>
-        <a href="?action=mom&dad={dad}&mom={mom}">{mom_mark} Мама согласна</a>
-    </div>
-
-    <div class="balance">{data["balance"]} руб.</div>
-
-    <div class="bottom">
-        <a class="minus green" href="?action=minus50">- 50</a>
-        <a class="minus red" href="?action=minus100">- 100</a>
-    </div>
-</div>
-"""
-
-st.markdown(html, unsafe_allow_html=True)
+components.html(html, height=680, scrolling=False)
