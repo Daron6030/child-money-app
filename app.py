@@ -1,13 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+import streamlit as st
+from datetime import datetime
 import json
 import os
-from datetime import datetime
-
-app = Flask(__name__)
 
 # Путь к файлу с данными
 DATA_FILE = "balance_data.json"
-
 
 # Загрузка данных из файла
 def load_data():
@@ -17,15 +14,16 @@ def load_data():
     with open(DATA_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
 
-
 # Сохранение данных в файл
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
-
-@app.route("/")
-def home():
+# Streamlit интерфейс
+def main():
+    st.title("Карманные деньги")
+    
+    # Загрузка данных
     data = load_data()
     balance = data["balance"]
     last_reset_date = data["last_reset_date"]
@@ -37,34 +35,38 @@ def home():
             balance = 1000  # Сброс баланса каждую неделю
             last_reset_date = str(today)
             save_data({"balance": balance, "last_reset_date": last_reset_date})
-
-    return render_template("index.html", balance=balance, last_reset_date=last_reset_date)
-
-
-@app.route("/spend/<amount>")
-def spend(amount):
-    amount = int(amount)
-    data = load_data()
     
-    new_balance = data["balance"] - amount
-    if new_balance < 0:
-        new_balance = 0  # Баланс не может быть меньше нуля
+    # Отображение баланса
+    st.subheader(f"Текущий баланс: {balance} ₽")
+    st.subheader(f"Последний сброс: {last_reset_date}")
 
-    data["balance"] = new_balance
-    save_data(data)
-
-    return redirect(url_for("home"))
-
-
-@app.route("/add_bonus", methods=["POST"])
-def add_bonus():
-    if "mom" in request.form and "dad" in request.form:
-        data = load_data()
-        data["balance"] += 100
+    # Кнопки для списания
+    if st.button('Снять 100 ₽'):
+        balance -= 100
+        if balance < 0:
+            balance = 0
+        data["balance"] = balance
         save_data(data)
-    
-    return redirect(url_for("home"))
+        st.experimental_rerun()
 
+    if st.button('Снять 50 ₽'):
+        balance -= 50
+        if balance < 0:
+            balance = 0
+        data["balance"] = balance
+        save_data(data)
+        st.experimental_rerun()
+
+    # Формы для разрешения
+    mom = st.checkbox('Мама разрешила')
+    dad = st.checkbox('Папа разрешил')
+
+    if mom and dad:
+        if st.button('Добавить 100 ₽'):
+            balance += 100
+            data["balance"] = balance
+            save_data(data)
+            st.experimental_rerun()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    main()
