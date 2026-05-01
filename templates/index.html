@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карманные деньги</title>
+    <link rel="icon" href="https://www.iconfinder.com/icons/4772014/cash_coin_money_pocket_wallet_icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Адаптивность для мобильных */
+        .header {
+            background-color: #ff9800;
+            color: white;
+            padding: 20px 0;
+        }
+        .balance {
+            font-size: 48px;
+            margin-top: 50px;
+        }
+
+        .button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 32px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .button.red {
+            background-color: #f44336;
+        }
+        .button.blue {
+            background-color: #2196f3;
+        }
+
+        .button.disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
+        }
+
+        .actions {
+            margin-top: 30px;
+        }
+
+        /* Адаптивность для мобильных экранов */
+        @media (max-width: 768px) {
+            .balance {
+                font-size: 36px;
+            }
+
+            .button {
+                padding: 10px 20px;
+                font-size: 18px;
+            }
+
+            .header {
+                padding: 15px 0;
+            }
+        }
+    </style>
+
+    <!-- Добавление иконки для PWA -->
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+    <div class="header">
+        <h1>Карманные деньги</h1>
+    </div>
+
+    <div class="balance">
+        <p>Текущий баланс: <strong>{{ balance }} ₽</strong></p>
+        <p>Последний сброс: {{ last_reset_date }}</p>
+    </div>
+
+    <div class="actions">
+        <a href="/spend/100">
+            <button class="button red">Снять 100 ₽</button>
+        </a>
+        <a href="/spend/50">
+            <button class="button blue">Снять 50 ₽</button>
+        </a>
+    </div>
+
+    <div class="actions">
+        <form method="POST" action="/add_bonus">
+            <label>
+                <input type="checkbox" name="mom"> Мама разрешила
+            </label>
+            <label>
+                <input type="checkbox" name="dad"> Папа разрешил
+            </label>
+            <br><br>
+            <button class="button" type="submit">Добавить 100 ₽</button>
+        </form>
+    </div>
+
+</body>
+</html>
