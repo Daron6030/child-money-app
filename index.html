@@ -2,108 +2,276 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карманные деньги</title>
-    <link rel="icon" href="https://www.iconfinder.com/icons/4772014/cash_coin_money_pocket_wallet_icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Дочь была молодец</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            text-align: center;
             margin: 0;
-            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(180deg, #67d7ff 0%, #dff8ff 42%, #ffffff 42%);
+            color: #071c4d;
         }
 
-        /* Адаптивность для мобильных */
-        .header {
-            background-color: #ff9800;
-            color: white;
-            padding: 20px 0;
+        .app {
+            width: 100%;
+            max-width: 430px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
         }
+
+        /* Убираем лишние элементы */
+        .cloud.one,
+        .cloud.two,
+        .sun {
+            display: none;
+        }
+
+        .bonus-form {
+            margin-top: 20px;
+        }
+
+        .bonus-button {
+            width: 100%;
+            height: 100px;
+            border: 0;
+            border-radius: 34px;
+            background: linear-gradient(180deg, #a94dff 0%, #6424df 100%);
+            color: white;
+            font-size: 50px;
+            font-weight: 900;
+            box-shadow: 0 10px 0 #4317a2, 0 14px 26px rgba(70, 30, 150, 0.35);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.25);
+        }
+
+        .bonus-note {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #6430ca;
+        }
+
+        .card {
+            background: white;
+            border-radius: 34px;
+            padding: 20px;
+            margin-top: -40px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Позиция текста "Дочь была молодец!" */
+        .title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 18px;
+            color: #071c4d;
+        }
+
+        .parents {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .parent-box {
+            height: 40px;
+            border-radius: 22px;
+            border: 2px solid #eee7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 12px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #5e44b7;
+            background: #fbf9ff;
+        }
+
+        .parent-box input {
+            width: 30px;
+            height: 30px;
+            accent-color: #7138e8;
+        }
+
+        .balance-box {
+            min-height: 145px;
+            border-radius: 26px;
+            background: linear-gradient(180deg, #fff9db 0%, #fff5c2 100%);
+            border: 2px solid #ffeaa0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
         .balance {
-            font-size: 48px;
-            margin-top: 50px;
+            font-size: 58px;
+            line-height: 1;
+            font-weight: 950;
+            color: #071c4d;
         }
 
-        .button {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 15px 32px;
+        .available {
+            margin-top: 8px;
             font-size: 20px;
-            margin: 10px;
-            cursor: pointer;
-            border-radius: 10px;
+            color: #757575;
+            font-weight: 800;
         }
 
-        .button.red {
-            background-color: #f44336;
-        }
-        .button.blue {
-            background-color: #2196f3;
-        }
-
-        .button.disabled {
-            background-color: #bdbdbd;
-            cursor: not-allowed;
+        .wallet {
+            position: absolute;
+            right: 18px;
+            bottom: 20px;
+            font-size: 58px;
         }
 
         .actions {
-            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
         }
 
-        /* Адаптивность для мобильных экранов */
-        @media (max-width: 768px) {
+        .action-button {
+            height: 130px;
+            border: 0;
+            border-radius: 28px;
+            color: white;
+            font-weight: 950;
+            font-size: 36px;
+            box-shadow: inset 0 -6px 0 rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.15);
+            text-shadow: 0 3px 5px rgba(0,0,0,0.25);
+        }
+
+        .green {
+            background: linear-gradient(180deg, #41d95d 0%, #20aa3e 100%);
+        }
+
+        .red {
+            background: linear-gradient(180deg, #ff4b48 0%, #ed1b24 100%);
+        }
+
+        .button-text-small {
+            display: block;
+            margin-top: 8px;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        @media (max-width: 480px) {
+            .sky {
+                height: 200px;
+            }
+
+            .bonus-form {
+                top: 85px;
+            }
+
+            .bonus-button {
+                height: 92px;
+                font-size: 54px;
+            }
+
+            .card {
+                padding-top: 22px;
+            }
+
+            .title {
+                font-size: 26px;
+                margin-bottom: 14px;
+            }
+
+            .parent-box {
+                height: 64px;
+                font-size: 15px;
+            }
+
+            .balance-box {
+                min-height: 130px;
+            }
+
             .balance {
-                font-size: 36px;
+                font-size: 58px;
             }
 
-            .button {
-                padding: 10px 20px;
-                font-size: 18px;
-            }
-
-            .header {
-                padding: 15px 0;
+            .action-button {
+                height: 130px;
+                font-size: 42px;
             }
         }
+
+        /* Убираем лишние белые овалы */
+        .cloud.one,
+        .cloud.two {
+            display: none;
+        }
+
+        /* Убираем смайлик сверху */
+        .sun {
+            display: none;
+        }
+
     </style>
-
-    <!-- Добавление иконки для PWA -->
-    <link rel="manifest" href="/manifest.json">
 </head>
+
 <body>
-    <div class="header">
-        <h1>Карманные деньги</h1>
-    </div>
+    <main class="app">
+        <section class="sky">
+            <form class="bonus-form" method="POST" action="/plus100">
+                <button class="bonus-button" type="submit">+100</button>
+                <div class="bonus-note">↗ Получено от родителей</div>
 
-    <div class="balance">
-        <p>Текущий баланс: <strong>{{ balance }} ₽</strong></p>
-        <p>Последний сброс: {{ last_reset_date }}</p>
-    </div>
+                <div class="parents">
+                    <label class="parent-box">
+                        <input type="checkbox" name="dad_ok">
+                        <span>Папа согласен</span>
+                    </label>
 
-    <div class="actions">
-        <a href="/spend/100">
-            <button class="button red">Снять 100 ₽</button>
-        </a>
-        <a href="/spend/50">
-            <button class="button blue">Снять 50 ₽</button>
-        </a>
-    </div>
+                    <label class="parent-box">
+                        <input type="checkbox" name="mom_ok">
+                        <span>Мама согласна</span>
+                    </label>
+                </div>
+            </form>
+        </section>
 
-    <div class="actions">
-        <form method="POST" action="/add_bonus">
-            <label>
-                <input type="checkbox" name="mom"> Мама разрешила
-            </label>
-            <label>
-                <input type="checkbox" name="dad"> Папа разрешил
-            </label>
-            <br><br>
-            <button class="button" type="submit">Добавить 100 ₽</button>
-        </form>
-    </div>
+        <section class="card">
+            <div class="title">Дочь была молодец! 💕</div>
 
+            <div class="balance-box">
+                <div class="balance">{{ balance }} руб.</div>
+                <div class="available">Доступно</div>
+                <div class="wallet">👛</div>
+            </div>
+
+            <div class="actions">
+                <form method="POST" action="/minus/50">
+                    <button class="action-button green" type="submit">
+                        -50 ₽
+                        <span class="button-text-small">дочь сама отдала</span>
+                    </button>
+                </form>
+
+                <form method="POST" action="/minus/100">
+                    <button class="action-button red" type="submit">
+                        -100 ₽
+                        <span class="button-text-small">родители наказали</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
-<link rel="manifest" href="/manifest.json">
